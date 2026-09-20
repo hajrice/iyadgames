@@ -28,3 +28,11 @@ jobs:
 
       - name: Deploy
         run: flyctl deploy --remote-only --ha=false
+
+      - name: Make sure the app has public IPs (needed for the iyad.world DNS records)
+        run: |
+          ips="$(flyctl ips list -a iyad-world --json)"
+          echo "$ips" | grep -q '"Type": *"v4"\|"Type": *"shared_v4"' || flyctl ips allocate-v4 --shared -a iyad-world
+          echo "$ips" | grep -q '"Type": *"v6"' || flyctl ips allocate-v6 -a iyad-world
+          echo "---- Use these in your registrar's DNS (A = v4, AAAA = v6) ----"
+          flyctl ips list -a iyad-world
