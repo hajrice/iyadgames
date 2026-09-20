@@ -17,36 +17,28 @@ Back that folder up if you care about the leaderboard history.
 
 ## Deploying to Fly.io (iyad.world)
 
-One-time setup (the app name `iyad-world` and region `fra` are in `fly.toml`):
+Deploys happen from GitHub, not from a laptop: every push to `main` runs
+`.github/workflows/fly-deploy.yml`, which builds the Dockerfile on Fly's builders and
+releases it. You can also trigger it by hand from the repo's **Actions** tab.
 
-```bash
-brew install flyctl
-fly auth login
-fly apps create iyad-world
-fly volumes create data --region fra --size 1
-fly deploy
-```
+One-time setup:
 
-Then point the domain at it:
+1. In the Fly dashboard create an app named **`iyad-world`** (any region — `fly.toml`
+   pins machines to `fra`). Don't use "Launch from GitHub"; a plain empty app is enough.
+2. Fly dashboard → **Tokens** → create a **Deploy token** for `iyad-world`.
+3. GitHub repo → **Settings → Secrets and variables → Actions** → new secret
+   `FLY_API_TOKEN` with that token.
+4. Push to `main` (or run the workflow manually). The first run also creates the 1 GB
+   `data` volume that holds scores.
 
-```bash
-fly certs add iyad.world
-fly certs add www.iyad.world
-fly ips list
-```
+Domain:
 
-Add DNS records at your registrar: an `A` record for `@` and `www` → the IPv4 from `fly ips list`,
-and an `AAAA` record → the IPv6. Fly issues the HTTPS certificate automatically once DNS resolves
-(`fly certs check iyad.world`).
-
-Every later release is just:
-
-```bash
-fly deploy
-```
+- Fly dashboard → app → **Certificates** → add `iyad.world` and `www.iyad.world`.
+- At your registrar add DNS: `A` records for `@` and `www` → the app's IPv4, `AAAA` → its IPv6
+  (both shown on the certificate page). HTTPS is issued automatically once DNS resolves.
 
 Scores live on the `data` volume at `/data`, so they survive deploys and restarts.
-To back them up: `fly ssh console -C "cat /data/results.json" > backup.json`.
+To back them up (needs flyctl locally): `fly ssh console -a iyad-world -C "cat /data/results.json" > backup.json`.
 
 ## Limits
 
