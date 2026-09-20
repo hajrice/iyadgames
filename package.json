@@ -1,0 +1,8 @@
+{
+  "name": "iyadgames",
+  "version": "1.0.0",
+  "description": "Match Day Maths — classroom football maths game",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

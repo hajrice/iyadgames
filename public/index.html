@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Iyad Games</title>
+<meta name="description" content="Match Day Maths — score goals with sums, climb the league, top the class leaderboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e9f1e6; --surface: #ffffff; --surface-2: #f2f7f0; --ink: #15231a; --muted: #5d6f62; --edge: #cfdccd;
+    --pitch: #2f8f49; --pitch-dark: #277a3d; --chalk: rgba(255,255,255,.8);
+    --gold: #f2b705; --good: #23a865; --bad: #e2483d; --bad-soft: #ffd9d6; --good-soft: #d3f3e2;
+    --shadow: 0 4px 0 rgba(20,40,25,.14);
+    --display: "Fredoka", "Arial Rounded MT Bold", "Nunito", sans-serif;
+    --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1911; --surface: #182a1e; --surface-2: #1f3626; --ink: #eef5ee; --muted: #9db3a3; --edge: #2d4a36;
+      --pitch: #257a3c; --pitch-dark: #1d6230; --bad-soft: #4a201c; --good-soft: #17402b; --shadow: 0 4px 0 rgba(0,0,0,.35); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1911; --surface: #182a1e; --surface-2: #1f3626; --ink: #eef5ee; --muted: #9db3a3; --edge: #2d4a36;
+    --pitch: #257a3c; --pitch-dark: #1d6230; --bad-soft: #4a201c; --good-soft: #17402b; --shadow: 0 4px 0 rgba(0,0,0,.35); color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.4; -webkit-tap-highlight-color: transparent; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+  .app { max-width: 760px; margin: 0 auto; padding-block: 12px 32px; padding-inline: 16px; }
+  h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; line-height: 1.1; }
+  h1 { font-size: clamp(2rem, 7vw, 3rem); font-weight: 700; letter-spacing: -.01em; }
+  h2 { font-size: 1.5rem; font-weight: 600; }
+  h3 { font-size: 1.15rem; font-weight: 600; }
+  p { margin: 0; }
+  .eyebrow { font-size: .8rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .hint { color: var(--muted); font-size: .95rem; }
+  .stack { display: grid; gap: 14px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .row.between { justify-content: space-between; }
+  .center { text-align: center; }
+
+  /* ---------- Top bar ---------- */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 6px 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; }
+  .brand .logo { width: 48px; height: 48px; display: grid; place-items: center; }
+  .brand .logo svg { width: 48px; height: 48px; }
+  .hero-logo { width: min(220px, 55vw); aspect-ratio: 1; }
+  .hero-logo svg { width: 100%; height: 100%; }
+  /* --- 3D logo animation --- */
+  .logo-svg { overflow: visible; filter: drop-shadow(0 8px 10px rgba(0,0,0,.28)); animation: logo-float 3.2s ease-in-out infinite; transition: transform .3s cubic-bezier(.3,1.6,.5,1); cursor: pointer; }
+  .logo-svg:hover { transform: scale(1.08) rotate(-6deg); }
+  .logo-svg .ball { transform-origin: 100px 88px; animation: logo-spin 7s linear infinite; }
+  .logo-svg .sweep { animation: logo-sweep 4.5s ease-in-out infinite; }
+  .logo-svg .ribbon { transform-origin: 100px 160px; animation: logo-ribbon 3.2s ease-in-out infinite; }
+  .logo-svg.kick .ball { animation: logo-kick .7s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes logo-float { 0%,100% { translate: 0 0 } 50% { translate: 0 -6px } }
+  @keyframes logo-spin { to { transform: rotate(360deg) } }
+  @keyframes logo-sweep { 0%, 55% { transform: translateX(-220px) skewX(-20deg) } 100% { transform: translateX(220px) skewX(-20deg) } }
+  @keyframes logo-ribbon { 0%,100% { transform: rotate(-1.5deg) } 50% { transform: rotate(1.5deg) } }
+  @keyframes logo-kick { 0% { transform: rotate(0) scale(1) } 35% { transform: rotate(180deg) scale(1.25) translateY(-14px) } 100% { transform: rotate(360deg) scale(1) } }
+  @media (prefers-reduced-motion: reduce) { .logo-svg, .logo-svg .ball, .logo-svg .sweep, .logo-svg .ribbon { animation: none; } }
+  .brand .word { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: .02em; line-height: 1; }
+  .brand .word small { display: block; font-family: var(--body); font-weight: 800; font-size: .7rem; letter-spacing: .14em; color: var(--muted); }
+  .me { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--edge); border-radius: 999px; padding: 4px 12px 4px 4px; }
+  .me .face { width: 34px; height: 34px; border-radius: 50%; }
+  .me .name { font-family: var(--display); font-weight: 600; }
+  .offline { font-size: .8rem; font-weight: 800; color: var(--bad); background: var(--bad-soft); border-radius: 999px; padding: 3px 10px; }
+
+  .panel { background: var(--surface); border: 2px solid var(--edge); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
+  .btn-primary {
+    background: var(--pitch); color: #fff; border: 0; border-radius: 999px; padding: 14px 28px;
+    font-family: var(--display); font-weight: 600; font-size: 1.3rem; box-shadow: 0 5px 0 var(--pitch-dark); transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .btn-primary:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--pitch-dark); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary.big { font-size: 1.6rem; padding: 18px 36px; }
+  .btn-ghost { background: transparent; border: 2px solid var(--edge); border-radius: 999px; padding: 8px 16px; font-weight: 800; color: var(--muted); }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--muted); }
+
+  /* ---------- Landing / leaderboard ---------- */
+  .hero { display: grid; gap: 8px; text-align: center; justify-items: center; padding-block: 8px; }
+  .winners { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .winners { grid-template-columns: 1fr; } }
+  .winner { background: linear-gradient(160deg, #fff4c2, #ffe38a); color: #2b2000; border: 3px solid var(--gold); border-radius: 18px; padding: 14px; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
+  .winner.week { background: linear-gradient(160deg, #d9f0ff, #a9d8ff); border-color: #4aa3e0; color: #0b2237; }
+  .winner .face { width: 72px; height: 72px; border-radius: 50%; border: 3px solid rgba(255,255,255,.8); }
+  .winner .label { font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+  .winner .who { font-family: var(--display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+  .winner .pts { font-weight: 800; font-size: .95rem; opacity: .85; }
+  .winner .none { font-weight: 800; opacity: .7; }
+  .board { display: grid; gap: 6px; }
+  .brow { display: grid; grid-template-columns: 30px 40px 1fr auto; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px; background: var(--surface-2); }
+  .brow .rank { font-family: var(--display); font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .brow .face { width: 40px; height: 40px; border-radius: 50%; }
+  .brow .who { font-weight: 800; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .brow .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brow .who .crest { width: 22px; height: 26px; flex: none; }
+  .brow .pts { font-family: var(--display); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .brow.me { outline: 2px solid var(--pitch); background: var(--good-soft); }
+  .tabs { display: flex; gap: 6px; }
+  .tab { border: 2px solid var(--edge); background: transparent; border-radius: 999px; padding: 6px 14px; font-weight: 800; color: var(--muted); }
+  .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* ---------- Sign in ---------- */
+  .name-input { width: 100%; font-family: var(--display); font-weight: 600; font-size: 1.8rem; padding: 12px 16px; border: 3px solid var(--edge); border-radius: 14px; background: var(--surface-2); text-align: center; }
+  .name-input:focus { border-color: var(--pitch); }
+  .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+  .roster button { background: var(--surface-2); border: 3px solid transparent; border-radius: 14px; padding: 8px 4px; display: grid; justify-items: center; gap: 4px; font-weight: 800; font-size: .85rem; }
+  .roster button:hover { border-color: var(--gold); }
+  .roster .face { width: 56px; height: 56px; border-radius: 50%; }
+  .roster span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ---------- Faces & crests ---------- */
+  .faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+  .faces button { background: var(--surface-2); border: 3px solid transparent; border-radius: 16px; padding: 6px; aspect-ratio: 1; }
+  .faces button svg { width: 100%; height: 100%; }
+  .faces button[aria-pressed="true"], .crests button[aria-pressed="true"] { border-color: var(--gold); outline: 3px solid var(--gold); outline-offset: 0; transform: scale(1.04); }
+  .league-label { display: flex; align-items: center; gap: 8px; font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+  .crests { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .crests button { background: var(--surface-2); border: 3px solid transparent; border-radius: 14px; padding: 8px 4px 6px; display: grid; justify-items: center; gap: 4px; font-weight: 800; font-size: .8rem; line-height: 1.1; text-align: center; }
+  .crests button svg { width: 48px; height: 56px; }
+  .preview { display: flex; align-items: center; gap: 12px; justify-content: center; }
+  .preview .face { width: 64px; height: 64px; border-radius: 50%; }
+  .preview .crest { width: 44px; height: 52px; }
+  .preview .clubname { font-family: var(--display); font-weight: 700; font-size: 1.4rem; }
+
+  /* ---------- Season home ---------- */
+  .next-match { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; text-align: center; }
+  .next-match .vs { font-family: var(--display); font-weight: 700; font-size: 1.4rem; color: var(--muted); }
+  .next-match .name { font-family: var(--display); font-weight: 700; font-size: 1.15rem; }
+  .next-match .pos { font-size: .85rem; color: var(--muted); font-weight: 800; }
+  .next-match .crest { width: 44px; height: 52px; }
+  .tier { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 2px solid var(--edge); border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: .9rem; }
+  .table { position: relative; display: grid; gap: 4px; max-height: 330px; overflow-y: auto; padding-right: 4px; }
+  .trow { display: grid; grid-template-columns: 34px 22px 1fr auto 40px; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background .15s ease; }
+  .trow:hover { background: var(--surface-2); }
+  .trow .slot { width: 40px; height: 40px; display: grid; place-items: center; }
+  .trow .slot .face { width: 38px; height: 38px; border-radius: 50%; transition: transform .25s cubic-bezier(.3,1.5,.5,1); animation: bob 2.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .trow:hover .slot .face { transform: rotate(-14deg) scale(1.15); }
+  .trow.jump .slot .face { animation: jump .5s ease; }
+  .face .eyes { transform-origin: 50px 54px; animation: blink 4.2s infinite; animation-delay: var(--d, 0s); }
+  .face .pupil { transition: transform .2s ease; }
+  .trow:hover .face .pupil { transform: translateX(3px); }
+  @keyframes bob { 0%,100% { translate: 0 0 } 50% { translate: 0 -3px } }
+  @keyframes blink { 0%,94%,100% { transform: scaleY(1) } 97% { transform: scaleY(.08) } }
+  @keyframes jump { 0% { transform: translateY(0) rotate(0) } 40% { transform: translateY(-14px) rotate(20deg) scale(1.2) } 100% { transform: translateY(0) rotate(0) } }
+  @media (prefers-reduced-motion: reduce) { .trow .slot .face, .face .eyes { animation: none; } }
+  .trow .ai { font-size: .7rem; font-weight: 800; letter-spacing: .08em; color: var(--muted); border: 1.5px solid var(--edge); border-radius: 6px; padding: 1px 5px; }
+  .trow .n { font-family: var(--display); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .trow .crest { width: 20px; height: 24px; }
+  .trow .zone { font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .trow.you { background: var(--good-soft); outline: 2px solid var(--pitch); }
+  .trow.you .n { color: var(--ink); }
+  .trow.next { background: var(--surface-2); }
+  .trow.top .zone { color: var(--gold); }
+  .cabinet { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .badge-card { background: var(--surface-2); border-radius: 14px; padding: 10px 8px; display: grid; justify-items: center; gap: 2px; text-align: center; font-size: .8rem; font-weight: 800; line-height: 1.15; }
+  .badge-card .ic { font-size: 2rem; line-height: 1; }
+  .badge-card .how { color: var(--muted); font-weight: 700; }
+  .badge-card.locked { opacity: .45; filter: grayscale(1); }
+  .best { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; font-weight: 800; color: var(--muted); font-size: .95rem; }
+  .best b { color: var(--ink); font-family: var(--display); font-size: 1.2rem; }
+  .live { display: flex; align-items: center; gap: 4px; font-weight: 800; color: var(--muted); font-size: .9rem; }
+  .live b { font-family: var(--display); font-size: 1.2rem; color: var(--gold); text-shadow: 0 1px 0 rgba(0,0,0,.25); font-variant-numeric: tabular-nums; }
+  .clock .time.golden { background: var(--gold); color: #15231a; animation: pulse .6s ease-in-out infinite alternate; }
+  @keyframes pulse { to { transform: scale(1.08) } }
+  @media (prefers-reduced-motion: reduce) { .clock .time.golden { animation: none; } }
+
+  /* ---------- Match ---------- */
+  .scoreboard { background: var(--surface); border: 2px solid var(--edge); border-radius: 18px; padding: 12px 14px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+  .team { display: grid; gap: 4px; justify-items: center; text-align: center; }
+  .team .who { display: flex; align-items: center; gap: 6px; font-family: var(--display); font-weight: 600; font-size: .95rem; }
+  .team .crest { width: 24px; height: 28px; }
+  .team .face { width: 28px; height: 28px; border-radius: 50%; }
+  .team .goals { font-family: var(--display); font-weight: 700; font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
+  .team .goals.bump { animation: pop .4s ease; }
+  @keyframes pop { 50% { transform: scale(1.3) } }
+  .clock { display: grid; justify-items: center; gap: 4px; }
+  .clock .time { font-family: var(--display); font-weight: 700; font-size: 1.7rem; font-variant-numeric: tabular-nums; background: var(--ink); color: var(--bg); border-radius: 10px; padding: 2px 12px; min-width: 70px; text-align: center; }
+  .clock .time.hurry { background: var(--bad); color: #fff; }
+  .clock .vs { font-size: .75rem; font-weight: 800; letter-spacing: .1em; color: var(--muted); }
+  .attack { display: grid; gap: 4px; }
+  .attack .label { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 800; color: var(--muted); }
+  .attack .bar { height: 12px; background: var(--surface-2); border: 2px solid var(--edge); border-radius: 999px; overflow: hidden; }
+  .attack .fill { height: 100%; width: 0; background: var(--bad); transition: width .25s linear; }
+  @media (prefers-reduced-motion: reduce) { .attack .fill { transition: none; } }
+  .pitch {
+    position: relative; border-radius: 18px; padding: 18px;
+    background: repeating-linear-gradient(0deg, var(--pitch) 0 44px, var(--pitch-dark) 44px 88px);
+    border: 4px solid var(--chalk); box-shadow: inset 0 0 0 4px var(--pitch-dark); display: grid; gap: 14px;
+  }
+  .question {
+    background: #fff; color: #15231a; border-radius: 16px; padding: 14px; text-align: center;
+    font-family: var(--display); font-weight: 700; font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.1; font-variant-numeric: tabular-nums;
+    border: 4px solid #cfdccd; box-shadow: 0 4px 0 rgba(0,0,0,.25);
+  }
+  .question .ans { display: inline-block; min-width: 1.4em; border-bottom: 5px solid var(--gold); color: #2f8f49; }
+  .question.column { font-size: clamp(1.8rem, 7.5vw, 2.7rem); padding-block: 10px; }
+  .question .col { display: inline-grid; grid-template-columns: auto auto; justify-items: end; column-gap: .3em; line-height: 1.08; }
+  .question .col .op { color: #5d6f62; justify-self: start; }
+  .question .col .line { grid-column: 1 / -1; width: 100%; border-top: 5px solid #15231a; margin-top: .06em; }
+  .question .col .ans { border-bottom: 0; min-width: 1.6em; text-align: right; }
+  .question .ans:empty::after { content: "?"; color: #b7c2b9; }
+  .question.good { background: #d3f3e2; border-color: #23a865; }
+  .question.bad { background: #ffd9d6; border-color: #e2483d; animation: shake .4s ease; }
+  @keyframes shake { 0%,100% { translate: 0 } 25% { translate: -6px 0 } 75% { translate: 6px 0 } }
+  @media (prefers-reduced-motion: reduce) { .question.bad, .team .goals.bump { animation: none; } }
+  .feedback { text-align: center; font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: #fff; min-height: 1.5em; text-shadow: 0 2px 0 rgba(0,0,0,.3); }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .key { background: #fff; color: #15231a; border: 0; border-radius: 12px; font-family: var(--display); font-weight: 700; font-size: 1.8rem; padding: 12px 0; box-shadow: 0 4px 0 rgba(0,0,0,.28); transition: transform .06s ease, box-shadow .06s ease; min-height: 58px; }
+  .key:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.28); }
+  .key.del { background: #ffe1de; font-size: 1.4rem; }
+  .key.go { background: var(--gold); }
+  .streak { text-align: center; font-weight: 800; color: var(--gold); text-shadow: 0 1px 0 rgba(0,0,0,.4); min-height: 1.4em; }
+
+  /* ---------- Toast, countdown, result ---------- */
+  .toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 18px); transform: translateX(-50%) translateY(-20px); background: var(--ink); color: var(--bg); border-radius: 999px; padding: 10px 22px; font-family: var(--display); font-weight: 700; font-size: 1.3rem; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 20; white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.goal { background: var(--gold); color: #15231a; }
+  .toast.rival { background: var(--bad); color: #fff; }
+  .countdown { position: fixed; inset: 0; display: grid; place-items: center; z-index: 40; pointer-events: none; font-family: var(--display); font-weight: 700; font-size: clamp(6rem, 30vw, 12rem); color: #fff; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
+  .overlay { position: fixed; inset: 0; background: rgba(10,25,14,.6); display: grid; place-items: center; padding: 16px; z-index: 30; overflow-y: auto; }
+  .result { background: var(--surface); border-radius: 22px; padding: 22px; width: min(100%, 460px); display: grid; gap: 12px; text-align: center; border: 3px solid var(--gold); }
+  .result .big { font-family: var(--display); font-weight: 700; font-size: 2.2rem; }
+  .result .score { font-family: var(--display); font-weight: 700; font-size: 3rem; font-variant-numeric: tabular-nums; }
+  .result .move { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+  .result .move.up { color: var(--good); }
+  .points { background: var(--surface-2); border-radius: 14px; padding: 10px 14px; display: grid; gap: 4px; text-align: left; font-weight: 700; font-size: .95rem; }
+  .points div { display: flex; justify-content: space-between; }
+  .points .total { border-top: 2px dashed var(--edge); padding-top: 6px; margin-top: 4px; font-family: var(--display); font-size: 1.3rem; }
+  .result-actions { display: grid; gap: 8px; }
+  canvas.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="brand" id="brand" aria-label="Iyad Games home">
+      <span class="logo" id="logo-small" aria-hidden="true"></span>
+      <span class="word">IYAD GAMES<small>Match Day Maths</small></span>
+    </button>
+    <div class="row">
+      <span class="offline" id="offline" hidden title="Scores are only saved in this browser">Offline scores</span>
+      <button class="me" id="me" hidden><span class="face" id="me-face"></span><span class="name" id="me-name"></span></button>
+    </div>
+  </header>
+
+  <!-- Landing -->
+  <section id="landing" class="stack" hidden>
+    <div class="hero">
+      <div class="hero-logo" id="logo-big" aria-hidden="true"></div>
+      <h1>Score goals with maths!</h1>
+      <p class="hint">Answer sums in 60 seconds. Win matches, climb the league, top the class.</p>
+      <button class="btn-primary big" id="play-landing">Play ▶</button>
+    </div>
+    <div class="winners">
+      <div class="winner" id="winner-today"></div>
+      <div class="winner week" id="winner-week"></div>
+    </div>
+    <div class="panel">
+      <div class="row between">
+        <h2>Leaderboard</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tab-today" aria-selected="true">Today</button>
+          <button class="tab" role="tab" id="tab-week" aria-selected="false">This week</button>
+        </div>
+      </div>
+      <div class="board" id="board"></div>
+    </div>
+  </section>
+
+  <!-- Sign in -->
+  <section id="signin" class="stack" hidden>
+    <div class="panel">
+      <h2 class="center">What's your name?</h2>
+      <input class="name-input" id="name" type="text" maxlength="20" autocomplete="off" placeholder="Type your name" aria-label="Your name">
+      <button class="btn-primary" id="name-next" style="justify-self:center" disabled>Next ▶</button>
+    </div>
+    <div class="panel" id="roster-panel" hidden>
+      <h3>Already played? Tap your face</h3>
+      <div class="roster" id="roster"></div>
+    </div>
+  </section>
+
+  <!-- Choose face -->
+  <section id="face" class="stack" hidden>
+    <div class="panel">
+      <h2 class="center" id="face-title">Pick your face</h2>
+      <div class="faces" id="faces"></div>
+      <div class="row" style="justify-content:center">
+        <button class="btn-ghost" id="face-back">◀ Back</button>
+        <button class="btn-primary" id="face-next">Next ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Choose crest -->
+  <section id="crest" class="stack" hidden>
+    <div class="panel">
+      <h2 class="center">Pick your club crest</h2>
+      <div class="preview" id="crest-preview"></div>
+      <div class="league-label"><span aria-hidden="true">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> Premier League</div>
+      <div class="crests" id="crests-pl"></div>
+      <div class="league-label"><span aria-hidden="true">🇪🇸</span> La Liga</div>
+      <div class="crests" id="crests-la"></div>
+      <div class="row" style="justify-content:center">
+        <button class="btn-ghost" id="crest-back">◀ Back</button>
+        <button class="btn-primary" id="crest-next">Start the season ⚽</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Season home -->
+  <section id="home" class="stack" hidden>
+    <div class="row between">
+      <div><p class="eyebrow" id="league-eyebrow">Class League</p><h2 id="home-title">Your season</h2></div>
+      <div class="row"><button class="btn-ghost" id="to-leaderboard">Leaderboard</button><button class="btn-ghost" id="switch">Switch player</button></div>
+    </div>
+    <div class="panel">
+      <div class="next-match" id="next-match"></div>
+      <div class="row" style="justify-content:center"><span class="tier" id="tier"></span></div>
+      <p class="hint center" id="rules"></p>
+      <div class="best" id="best"></div>
+      <button class="btn-primary" id="play" style="justify-self:center">Play match ▶</button>
+    </div>
+    <div class="panel">
+      <div class="row between"><h2>League table</h2><span class="hint" id="wins"></span></div>
+      <div class="table" id="table"></div>
+      <div class="row"><button class="btn-ghost" id="reset">Restart season</button><button class="btn-ghost" id="edit-look">Change face or crest</button></div>
+    </div>
+    <div class="panel">
+      <div class="row between"><h2>Trophy cabinet</h2><span class="hint" id="cabinet-count"></span></div>
+      <div class="cabinet" id="cabinet"></div>
+    </div>
+  </section>
+
+  <!-- Match -->
+  <section id="game" class="stack" hidden>
+    <div class="scoreboard">
+      <div class="team"><span class="who" id="you-who"></span><span class="goals" id="you-goals">0</span></div>
+      <div class="clock"><span class="time" id="clock">60</span><span class="vs">SECONDS</span><span class="live">⭐ <b id="live-pts">0</b> pts · Lv <b id="live-lvl">1</b></span></div>
+      <div class="team"><span class="who" id="rival-who"></span><span class="goals" id="rival-goals">0</span></div>
+    </div>
+    <div class="attack">
+      <div class="label"><span id="attack-label">Rival attacking…</span><span id="attack-hint"></span></div>
+      <div class="bar"><div class="fill" id="attack-fill"></div></div>
+    </div>
+    <div class="pitch">
+      <div class="question" id="question"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="pad" id="pad"></div>
+      <div class="streak" id="streak"></div>
+    </div>
+    <div class="row between">
+      <span class="hint">You can type with the keyboard too. Enter = shoot.</span>
+      <div class="row"><button class="btn-ghost" id="mute" aria-pressed="false">🔊 Sound</button><button class="btn-ghost" id="quit">Quit match</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="countdown" id="countdown" hidden></div>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+<div class="overlay" id="result" hidden>
+  <div class="result" role="dialog" aria-labelledby="result-title">
+    <div class="big" id="result-title">Full time!</div>
+    <div class="score" id="result-score">0 – 0</div>
+    <div class="move" id="result-move"></div>
+    <div class="points" id="result-points"></div>
+    <p class="hint" id="result-msg"></p>
+    <p id="result-rank" style="font-weight:800"></p>
+    <div class="result-actions">
+      <button class="btn-primary" id="result-next">Next match ▶</button>
+      <button class="btn-ghost" id="result-table">See league table</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // =====================================================================
+  // Clubs (crests are drawn from colours + a pattern — no logos)
+  // =====================================================================
+  const CLUBS = {
+    pl: [
+      ["Arsenal", "#EF0107", "#ffffff", "sleeves"], ["Aston Villa", "#670E36", "#95BFE5", "sleeves"], ["Bournemouth", "#DA291C", "#000000", "stripes"],
+      ["Brentford", "#E30613", "#ffffff", "stripes"], ["Brighton", "#0057B8", "#ffffff", "stripes"], ["Burnley", "#6C1D45", "#99D6EA", "sleeves"],
+      ["Chelsea", "#034694", "#ffffff", "solid"], ["Crystal Palace", "#1B458F", "#C4122E", "stripes"], ["Everton", "#003399", "#ffffff", "solid"],
+      ["Fulham", "#ffffff", "#000000", "solid"], ["Leeds", "#ffffff", "#FFCD00", "solid"], ["Liverpool", "#C8102E", "#ffffff", "solid"],
+      ["Man City", "#6CABDD", "#1C2C5B", "solid"], ["Man United", "#DA291C", "#FBE122", "solid"], ["Newcastle", "#241F20", "#ffffff", "stripes"],
+      ["Nottm Forest", "#DD0000", "#ffffff", "solid"], ["Sunderland", "#EB172B", "#ffffff", "stripes"], ["Tottenham", "#ffffff", "#132257", "solid"],
+      ["West Ham", "#7A263A", "#1BB1E7", "sleeves"], ["Wolves", "#FDB913", "#231F20", "solid"],
+    ],
+    la: [
+      ["Alavés", "#0761AF", "#ffffff", "stripes"], ["Athletic Club", "#EE2523", "#ffffff", "stripes"], ["Atlético", "#CB3524", "#ffffff", "stripes"],
+      ["Barcelona", "#A50044", "#004D98", "stripes"], ["Betis", "#00954C", "#ffffff", "stripes"], ["Celta", "#8AC3EE", "#ffffff", "solid"],
+      ["Elche", "#ffffff", "#0E7D3B", "solid"], ["Espanyol", "#007FC8", "#ffffff", "stripes"], ["Getafe", "#004FA3", "#ffffff", "solid"],
+      ["Girona", "#CD2534", "#ffffff", "stripes"], ["Levante", "#004C9E", "#AD1519", "stripes"], ["Mallorca", "#E20613", "#000000", "solid"],
+      ["Osasuna", "#D91A21", "#0A346F", "sleeves"], ["Oviedo", "#0D5EAF", "#ffffff", "solid"], ["Rayo", "#ffffff", "#E53027", "sash"],
+      ["Real Madrid", "#ffffff", "#1a1a6e", "solid"], ["Real Sociedad", "#0067B1", "#ffffff", "stripes"], ["Sevilla", "#ffffff", "#D4021D", "solid"],
+      ["Valencia", "#ffffff", "#F7A800", "solid"], ["Villarreal", "#FFE667", "#005187", "solid"],
+    ],
+  };
+  const CLUB_LIST = Object.entries(CLUBS).flatMap(([league, list]) => list.map(([name, c1, c2, pattern]) => ({ name, c1, c2, pattern, league })));
+  const club = (name) => CLUB_LIST.find((c) => c.name === name) || CLUB_LIST[0];
+  const isLight = (hex) => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114) > 186; };
+
+  function crestSVG(c, letter = "") {
+    const id = "p" + Math.random().toString(36).slice(2, 8);
+    let fill;
+    if (c.pattern === "stripes") fill = `<pattern id="${id}" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="${c.c1}"/><rect width="5" height="10" fill="${c.c2}"/></pattern>`;
+    else if (c.pattern === "sash") fill = `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset=".42" stop-color="${c.c1}"/><stop offset=".42" stop-color="${c.c2}"/><stop offset=".58" stop-color="${c.c2}"/><stop offset=".58" stop-color="${c.c1}"/></linearGradient>`;
+    else if (c.pattern === "sleeves") fill = `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0"><stop offset=".22" stop-color="${c.c2}"/><stop offset=".22" stop-color="${c.c1}"/><stop offset=".78" stop-color="${c.c1}"/><stop offset=".78" stop-color="${c.c2}"/></linearGradient>`;
+    else fill = `<linearGradient id="${id}"><stop offset="1" stop-color="${c.c1}"/></linearGradient>`;
+    const band = c.pattern === "solid" ? `<path d="M6 8 H44 V18 H6 Z" fill="${c.c2}"/>` : "";
+    const textColor = isLight(c.pattern === "solid" ? c.c2 : c.c1) && c.pattern === "solid" ? c.c1 : isLight(c.c1) ? c.c2 : "#ffffff";
+    return `<svg viewBox="0 0 50 60" class="crest" aria-hidden="true"><defs>${fill}</defs>
+      <path d="M6 4 H44 V34 Q44 50 25 57 Q6 50 6 34 Z" fill="url(#${id})" stroke="#15231a" stroke-width="2.5" stroke-linejoin="round"/>
+      ${band}
+      ${letter ? `<text x="25" y="41" text-anchor="middle" font-family="Fredoka, Nunito, sans-serif" font-weight="700" font-size="22" fill="${textColor}" stroke="rgba(0,0,0,.35)" stroke-width=".8" paint-order="stroke">${letter}</text>` : ""}
+    </svg>`;
+  }
+
+  // =====================================================================
+  // Logo: red/blue striped 3D badge, spinning football, MATHS ribbon
+  // =====================================================================
+  function logoSVG(id) {
+    const u = (n) => `${id}-${n}`;
+    // pentagon on a football: centre + 5 around it
+    const pent = (cx, cy, r, rot = 0) => { const pts = []; for (let i = 0; i < 5; i++) { const a = rot + (i * 2 * Math.PI) / 5 - Math.PI / 2; pts.push(`${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`); } return `<polygon points="${pts.join(" ")}" fill="#1b1f2a"/>`; };
+    const ring = [0, 1, 2, 3, 4].map((i) => { const a = (i * 2 * Math.PI) / 5 - Math.PI / 2; return pent(100 + 30 * Math.cos(a), 88 + 30 * Math.sin(a), 8.5, Math.PI); }).join("");
+    const seams = [0, 1, 2, 3, 4].map((i) => { const a = (i * 2 * Math.PI) / 5 - Math.PI / 2; return `<line x1="${(100 + 11 * Math.cos(a)).toFixed(1)}" y1="${(88 + 11 * Math.sin(a)).toFixed(1)}" x2="${(100 + 22 * Math.cos(a)).toFixed(1)}" y2="${(88 + 22 * Math.sin(a)).toFixed(1)}" stroke="#1b1f2a" stroke-width="2"/>`; }).join("");
+    return `<svg viewBox="0 0 200 200" class="logo-svg" aria-hidden="true">
+      <defs>
+        <clipPath id="${u("clip")}"><circle cx="100" cy="100" r="88"/></clipPath>
+        <pattern id="${u("stripes")}" width="24" height="200" patternUnits="userSpaceOnUse"><rect width="12" height="200" fill="#e0312f"/><rect x="12" width="12" height="200" fill="#1e4fcf"/></pattern>
+        <radialGradient id="${u("shade")}" cx="35%" cy="28%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></radialGradient>
+        <radialGradient id="${u("ballshade")}" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e8ecf2"/><stop offset="1" stop-color="#8e97a8"/></radialGradient>
+        <radialGradient id="${u("ballgloss")}" cx="35%" cy="25%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+        <linearGradient id="${u("rim")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".5" stop-color="#f2b705"/><stop offset="1" stop-color="#9a6d00"/></linearGradient>
+        <linearGradient id="${u("ribbon")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".5" stop-color="#d1261f"/><stop offset="1" stop-color="#8f1410"/></linearGradient>
+        <linearGradient id="${u("sweep")}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="96" fill="url(#${u("rim")})"/>
+      <circle cx="100" cy="100" r="90" fill="#0c1a3a"/>
+      <g clip-path="url(#${u("clip")})">
+        <rect width="200" height="200" fill="url(#${u("stripes")})"/>
+        <circle cx="100" cy="100" r="88" fill="url(#${u("shade")})"/>
+        <rect class="sweep" x="60" y="-20" width="80" height="240" fill="url(#${u("sweep")})" transform="skewX(-20)"/>
+      </g>
+      <ellipse cx="100" cy="132" rx="38" ry="8" fill="#000" opacity=".28"/>
+      <g class="ball">
+        <circle cx="100" cy="88" r="42" fill="url(#${u("ballshade")})"/>
+        ${pent(100, 88, 11)}${ring}${seams}
+        <circle cx="100" cy="88" r="42" fill="url(#${u("ballgloss")})"/>
+        <circle cx="100" cy="88" r="42" fill="none" stroke="#1b1f2a" stroke-width="2.5"/>
+      </g>
+      <ellipse cx="68" cy="52" rx="16" ry="9" fill="#fff" opacity=".5" transform="rotate(-35 68 52)"/>
+      <g class="ribbon">
+        <path d="M22 148 L40 140 L160 140 L178 148 L170 172 L152 178 L48 178 L30 172 Z" fill="url(#${u("ribbon")})" stroke="#5d0c09" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M40 140 L160 140 L156 146 L44 146 Z" fill="#fff" opacity=".25"/>
+        <text x="100" y="167" text-anchor="middle" font-family="Fredoka, Nunito, sans-serif" font-weight="700" font-size="26" letter-spacing="3" fill="#fff" stroke="#5d0c09" stroke-width="1.2" paint-order="stroke">MATHS</text>
+      </g>
+      <circle cx="100" cy="100" r="93" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+    </svg>`;
+  }
+  function mountLogos() {
+    $("logo-small").innerHTML = logoSVG("ls"); $("logo-big").innerHTML = logoSVG("lb");
+    document.querySelectorAll(".logo-svg").forEach((el) => el.addEventListener("click", (e) => {
+      if (el.parentElement.id === "logo-big") e.stopPropagation();
+      el.classList.remove("kick"); void el.offsetWidth; el.classList.add("kick"); cheer();
+    }));
+  }
+
+  // =====================================================================
+  // 20 predefined faces
+  // =====================================================================
+  const SKIN = { a: "#f9dcc4", b: "#f1c9a5", c: "#e0ac7e", d: "#c68642", e: "#8d5524", f: "#5c3a21", g: "#3b2314" };
+  const FACES = [
+    { skin: "a", hair: "long", hc: "#f2c94c", eyes: "#3b82c4" },
+    { skin: "a", hair: "short", hc: "#7a4b23", eyes: "#3f9a5a" },
+    { skin: "b", hair: "bob", hc: "#1a1a1a", eyes: "#4a2c17" },
+    { skin: "a", hair: "curly", hc: "#d95d2c", eyes: "#3f9a5a", freckles: true },
+    { skin: "a", hair: "spiky", hc: "#f2c94c", eyes: "#3b82c4" },
+    { skin: "b", hair: "ponytail", hc: "#7a4b23", eyes: "#8a6a2b" },
+    { skin: "a", hair: "buzz", hc: "#5a3a1e", eyes: "#4a2c17" },
+    { skin: "b", hair: "long", hc: "#1a1a1a", eyes: "#1a1a1a" },
+    { skin: "a", hair: "bob", hc: "#f2c94c", eyes: "#3b82c4", glasses: true },
+    { skin: "c", hair: "short", hc: "#1a1a1a", eyes: "#4a2c17" },
+    { skin: "a", hair: "bun", hc: "#7a4b23", eyes: "#3f9a5a" },
+    { skin: "b", hair: "curlyshort", hc: "#5a3a1e", eyes: "#5b7fa3" },
+    { skin: "a", hair: "long", hc: "#7a4b23", eyes: "#4a2c17", freckles: true },
+    { skin: "c", hair: "spiky", hc: "#1a1a1a", eyes: "#1a1a1a" },
+    { skin: "b", hair: "hijab", hc: "#1d9e8f", eyes: "#4a2c17" },
+    { skin: "a", hair: "ponytail", hc: "#d95d2c", eyes: "#3b82c4" },
+    { skin: "f", hair: "curly", hc: "#1a1a1a", eyes: "#3b2314" },
+    { skin: "e", hair: "short", hc: "#1a1a1a", eyes: "#4a2c17" },
+    { skin: "a", hair: "curly", hc: "#f2c94c", eyes: "#8a6a2b", glasses: true },
+    { skin: "b", hair: "bob", hc: "#5a3a1e", eyes: "#3f9a5a" },
+  ];
+  const BG = ["#ffe0b2", "#c8e6c9", "#bbdefb", "#f8bbd0", "#fff9c4", "#d1c4e9", "#b2ebf2", "#ffccbc", "#dcedc8", "#f0f4c3"];
+
+  function faceSVG(i, extraClass = "face") {
+    const f = FACES[((i % FACES.length) + FACES.length) % FACES.length];
+    const skin = SKIN[f.skin], h = f.hc, bg = BG[i % BG.length];
+    const back = {
+      long: `<path d="M22 50 Q20 20 50 18 Q80 20 78 50 L80 92 H20 Z" fill="${h}"/>`,
+      afro: `<circle cx="50" cy="48" r="38" fill="${h}"/>`,
+      braids: `<path d="M24 45 Q22 20 50 18 Q78 20 76 45 L78 92 H68 L66 55 L60 60 L58 92 H42 L40 60 L34 55 L32 92 H22 Z" fill="${h}"/>`,
+      ponytail: `<path d="M70 40 Q92 45 84 90 L74 88 Q80 55 66 46 Z" fill="${h}"/>`,
+      bob: `<path d="M22 46 Q20 18 50 17 Q80 18 78 46 L78 70 H22 Z" fill="${h}"/>`,
+      hijab: `<path d="M18 92 Q12 40 50 22 Q88 40 82 92 Z" fill="${h}"/>`,
+      puffs: `<circle cx="24" cy="34" r="15" fill="${h}"/><circle cx="76" cy="34" r="15" fill="${h}"/>`,
+    }[f.hair] || "";
+    const front = {
+      long: `<path d="M24 46 Q22 22 50 20 Q78 22 76 46 Q72 30 50 32 Q28 30 24 46 Z" fill="${h}"/>`,
+      curly: `<g fill="${h}"><circle cx="26" cy="40" r="10"/><circle cx="36" cy="28" r="11"/><circle cx="50" cy="23" r="12"/><circle cx="64" cy="28" r="11"/><circle cx="74" cy="40" r="10"/><circle cx="30" cy="52" r="8"/><circle cx="70" cy="52" r="8"/></g>`,
+      curlyshort: `<g fill="${h}"><circle cx="30" cy="36" r="9"/><circle cx="40" cy="28" r="10"/><circle cx="50" cy="25" r="10"/><circle cx="60" cy="28" r="10"/><circle cx="70" cy="36" r="9"/></g>`,
+      short: `<path d="M24 44 Q24 20 50 20 Q76 20 76 44 Q70 32 50 33 Q30 32 24 44 Z" fill="${h}"/>`,
+      buzz: `<path d="M25 42 Q26 24 50 23 Q74 24 75 42 Q70 34 50 34 Q30 34 25 42 Z" fill="${h}"/>`,
+      spiky: `<path d="M24 44 L28 22 L36 34 L42 16 L50 32 L58 16 L64 34 L72 22 L76 44 Q70 34 50 34 Q30 34 24 44 Z" fill="${h}"/>`,
+      afro: `<path d="M24 46 Q22 24 50 22 Q78 24 76 46 Q72 34 50 34 Q28 34 24 46 Z" fill="${h}"/>`,
+      braids: `<path d="M24 46 Q22 22 50 20 Q78 22 76 46 Q72 32 50 33 Q28 32 24 46 Z" fill="${h}"/>`,
+      ponytail: `<path d="M24 46 Q22 22 50 20 Q78 22 76 46 Q72 32 50 33 Q28 32 24 46 Z" fill="${h}"/>`,
+      bob: `<path d="M24 46 Q22 22 50 20 Q78 22 76 46 Q72 32 50 33 Q28 32 24 46 Z" fill="${h}"/>`,
+      bun: `<circle cx="50" cy="20" r="11" fill="${h}"/><path d="M24 46 Q22 24 50 22 Q78 24 76 46 Q72 34 50 34 Q28 34 24 46 Z" fill="${h}"/>`,
+      hijab: `<path d="M26 50 Q24 26 50 24 Q76 26 74 50 Q70 36 50 36 Q30 36 26 50 Z" fill="${h}"/>`,
+      puffs: `<path d="M24 46 Q22 24 50 22 Q78 24 76 46 Q72 34 50 34 Q28 34 24 46 Z" fill="${h}"/>`,
+    }[f.hair] || "";
+    const eyes = `<g class="eyes"><ellipse cx="39" cy="54" rx="6" ry="6.5" fill="#fff"/><ellipse cx="61" cy="54" rx="6" ry="6.5" fill="#fff"/>
+      <g class="pupil"><circle cx="40" cy="55" r="3.6" fill="${f.eyes}"/><circle cx="62" cy="55" r="3.6" fill="${f.eyes}"/>
+      <circle cx="40.5" cy="55" r="1.8" fill="#111"/><circle cx="62.5" cy="55" r="1.8" fill="#111"/>
+      <circle cx="42" cy="53" r="1" fill="#fff"/><circle cx="64" cy="53" r="1" fill="#fff"/></g></g>
+      <path d="M32 46 Q39 42 46 46" stroke="${h}" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M54 46 Q61 42 68 46" stroke="${h}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    const glasses = f.glasses ? `<g fill="none" stroke="#333" stroke-width="2"><circle cx="39" cy="55" r="9"/><circle cx="61" cy="55" r="9"/><path d="M48 55 H52"/></g>` : "";
+    const freckles = f.freckles ? `<g fill="rgba(120,60,30,.45)"><circle cx="34" cy="64" r="1.2"/><circle cx="39" cy="66" r="1.2"/><circle cx="44" cy="64" r="1.2"/><circle cx="56" cy="64" r="1.2"/><circle cx="61" cy="66" r="1.2"/><circle cx="66" cy="64" r="1.2"/></g>` : "";
+    return `<svg viewBox="0 0 100 100" class="${extraClass}" aria-hidden="true">
+      <circle cx="50" cy="50" r="50" fill="${bg}"/>
+      ${back}
+      <ellipse cx="24" cy="58" rx="5" ry="6" fill="${skin}"/><ellipse cx="76" cy="58" rx="5" ry="6" fill="${skin}"/>
+      <ellipse cx="50" cy="56" rx="27" ry="30" fill="${skin}"/>
+      ${eyes}${glasses}${freckles}
+      <path d="M48 62 Q50 66 52 62" stroke="rgba(0,0,0,.25)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M40 72 Q50 82 60 72" stroke="#7a2e2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="34" cy="68" rx="5" ry="3" fill="rgba(255,120,120,.25)"/><ellipse cx="66" cy="68" rx="5" ry="3" fill="rgba(255,120,120,.25)"/>
+      ${front}
+    </svg>`;
+  }
+
+  // =====================================================================
+  // Maths tiers — by league position (1 = top of 20)
+  // =====================================================================
+  const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const pick = (arr) => arr[rnd(0, arr.length - 1)];
+  const shuffle = (arr) => { for (let i = arr.length - 1; i > 0; i--) { const j = rnd(0, i); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+  const MATCH_SECONDS = 60;
+  // Rival speed comes from league position (top of the table = faster rival)
+  const RIVAL_SPEEDS = [20, 17, 14, 11, 9];
+  // Sum difficulty comes from skill level: base level from total points, +1 every 5 answers in a match
+  const col = (a, op, b) => ({ q: `${a} ${op} ${b}`, a: op === "+" ? a + b : a - b, col: { a, op, b } });
+  const G = {
+    addTo10: () => { const a = rnd(1, 9), b = rnd(1, 10 - a); return { q: `${a} + ${b}`, a: a + b }; },
+    addTo20: () => { const a = rnd(2, 15), b = rnd(1, 20 - a); return { q: `${a} + ${b}`, a: a + b }; },
+    subTo10: () => { const a = rnd(3, 10), b = rnd(1, a - 1); return { q: `${a} − ${b}`, a: a - b }; },
+    subTo20: () => { const a = rnd(8, 20), b = rnd(1, a - 1); return { q: `${a} − ${b}`, a: a - b }; },
+    doubles: () => { const a = rnd(2, 25); return { q: `${a} + ${a}`, a: a * 2 }; },
+    tens: () => { const a = rnd(1, 9) * 10, b = rnd(1, 9) * 10; return a + b <= 100 ? { q: `${a} + ${b}`, a: a + b } : { q: `${Math.max(a, b)} − ${Math.min(a, b)}`, a: Math.abs(a - b) }; },
+    twoPlusOne: () => { const o = rnd(0, 8), a = rnd(1, 8) * 10 + o, b = rnd(1, 9 - o); return { q: `${a} + ${b}`, a: a + b }; },
+    twoPlusOneCarry: () => { const o = rnd(2, 9), a = rnd(1, 8) * 10 + o, b = rnd(10 - o, 9); return { q: `${a} + ${b}`, a: a + b }; },
+    twoMinusOne: () => { const o = rnd(1, 9), a = rnd(1, 9) * 10 + o, b = rnd(1, o); return { q: `${a} − ${b}`, a: a - b }; },
+    twoMinusOneBorrow: () => { const o = rnd(0, 8), a = rnd(2, 9) * 10 + o, b = rnd(o + 1, 9); return { q: `${a} − ${b}`, a: a - b }; },
+    twoPlusTwo: () => { const t1 = rnd(1, 5), t2 = rnd(1, 9 - t1), o1 = rnd(0, 5), o2 = rnd(0, 9 - o1); return col(t1 * 10 + o1, "+", t2 * 10 + o2); },
+    twoPlusTwoCarry: () => { const t1 = rnd(1, 4), t2 = rnd(1, 8 - t1), o1 = rnd(1, 9), o2 = rnd(10 - o1, 9); return col(t1 * 10 + o1, "+", t2 * 10 + o2); },
+    twoMinusTwo: () => { const t1 = rnd(2, 9), t2 = rnd(1, t1 - 1), o1 = rnd(1, 9), o2 = rnd(0, o1); return col(t1 * 10 + o1, "−", t2 * 10 + o2); },
+    twoMinusTwoBorrow: () => { const t1 = rnd(2, 9), t2 = rnd(1, t1 - 1), o1 = rnd(0, 8), o2 = rnd(o1 + 1, 9); return col(t1 * 10 + o1, "−", t2 * 10 + o2); },
+    times: (tables) => () => { const t = pick(tables), b = rnd(1, 10); return Math.random() < .5 ? { q: `${t} × ${b}`, a: t * b } : { q: `${b} × ${t}`, a: t * b }; },
+    divide: (tables) => () => { const t = pick(tables), b = rnd(1, 10); return { q: `${t * b} ÷ ${t}`, a: b }; },
+    missing: () => pick([
+      () => { const a = rnd(1, 9), su = rnd(a + 1, 20); return { q: `? + ${a} = ${su}`, a: su - a, missing: true }; },
+      () => { const t = pick([2, 5, 10]), b = rnd(2, 10); return { q: `? × ${t} = ${t * b}`, a: b, missing: true }; },
+      () => { const a = rnd(10, 20), b = rnd(1, 9); return { q: `${a} − ? = ${a - b}`, a: b, missing: true }; },
+    ])(),
+    threeSum: () => { const a = rnd(2, 12), b = rnd(2, 12), c = rnd(2, 12); return { q: `${a} + ${b} + ${c}`, a: a + b + c }; },
+  };
+  const LEVELS = [
+    { name: "Adding to 10", gens: [G.addTo10] },
+    { name: "Adding to 20", gens: [G.addTo20, G.addTo10] },
+    { name: "Taking away to 10", gens: [G.subTo10, G.addTo20] },
+    { name: "Taking away to 20", gens: [G.subTo20, G.doubles, G.addTo20] },
+    { name: "Tens and two-digit sums", gens: [G.tens, G.twoPlusOne, G.twoMinusOne] },
+    { name: "Carrying and borrowing", gens: [G.twoPlusOneCarry, G.twoMinusOneBorrow, G.times([2, 10])] },
+    { name: "×2 ×5 ×10 and column sums", gens: [G.times([2, 5, 10]), G.twoPlusTwo] },
+    { name: "Column adding and taking away", gens: [G.twoPlusTwo, G.twoMinusTwo, G.times([5, 10])] },
+    { name: "Column sums with carrying", gens: [G.twoPlusTwoCarry, G.times([3, 4]), G.twoMinusTwo] },
+    { name: "Borrowing and dividing", gens: [G.twoMinusTwoBorrow, G.divide([2, 5, 10]), G.twoPlusTwoCarry] },
+    { name: "All the times tables", gens: [G.times([2, 3, 4, 5, 6, 7, 8, 9, 10]), G.threeSum, G.twoPlusTwoCarry] },
+    { name: "Champion maths", gens: [G.missing, G.twoMinusTwoBorrow, G.times([6, 7, 8, 9]), G.divide([3, 4, 6, 8])] },
+  ];
+  const POINTS_PER_LEVEL = 20, RAMP_EVERY = 5;
+  const levelFor = (total) => Math.min(LEVELS.length, 1 + Math.floor((total || 0) / POINTS_PER_LEVEL));
+  const genFor = (level) => pick(LEVELS[Math.min(LEVELS.length, Math.max(1, level)) - 1].gens)();
+  const rivalSpeed = (pos, len) => RIVAL_SPEEDS[len <= 1 ? 4 : Math.min(4, Math.floor((1 - (pos - 1) / (len - 1)) * 5))];
+  const BADGES = [
+    { id: "first_goal", icon: "⚽", name: "First goal", how: "Score your first goal" },
+    { id: "hat_trick", icon: "🎩", name: "Hat-trick hero", how: "3 right in a row" },
+    { id: "on_fire", icon: "🔥", name: "On fire", how: "6 right in a row" },
+    { id: "perfect", icon: "💯", name: "Perfect match", how: "5+ right and none wrong" },
+    { id: "first_win", icon: "🏅", name: "First win", how: "Win a match" },
+    { id: "top_half", icon: "📈", name: "Top half", how: "Climb into the top half" },
+    { id: "big_score", icon: "⭐", name: "Big scorer", how: "15+ points in one match" },
+    { id: "golden", icon: "⚡", name: "Golden goal", how: "Score in the last 10 seconds" },
+    { id: "champion", icon: "🏆", name: "Champion", how: "Win the league" },
+    { id: "club_100", icon: "💎", name: "100 club", how: "100 points in total" },
+  ];
+  const ordinal = (n) => n + (n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th");
+
+  // =====================================================================
+  // Storage: server API, falling back to this browser's localStorage
+  // =====================================================================
+  const $ = (id) => document.getElementById(id);
+  const lget = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } };
+  const lset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+  const nkey = (name) => name.trim().toLowerCase();
+
+  const local = {
+    async players() { return Object.values(lget("ig-players", {})); },
+    async savePlayer(p) { const all = lget("ig-players", {}); all[nkey(p.name)] = { ...all[nkey(p.name)], ...p, updated: Date.now() }; lset("ig-players", all); return all[nkey(p.name)]; },
+    async results() { const cutoff = Date.now() - 8 * 86400000; return lget("ig-results", []).filter((r) => r.ts >= cutoff); },
+    async addResult(r) { const all = lget("ig-results", []); all.push({ ...r, ts: Date.now() }); lset("ig-results", all.slice(-2000)); },
+  };
+  const api = async (path, body) => {
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 4000);
+    try {
+      const res = await fetch(path, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json" } : {}, body: body && JSON.stringify(body), signal: ctrl.signal });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || res.statusText); }
+      return res.json();
+    } finally { clearTimeout(t); }
+  };
+  const remote = {
+    async players() { return api("/api/players"); },
+    async savePlayer(p) { return api("/api/players", p); },
+    async results() { return api("/api/results?days=8"); },
+    async addResult(r) { return api("/api/results", r); },
+  };
+  let store = local;
+  async function detectStore() {
+    try { await remote.players(); store = remote; $("offline").hidden = true; }
+    catch { store = local; $("offline").hidden = false; }
+  }
+
+  // =====================================================================
+  // State
+  // =====================================================================
+  let me = lget("ig-me", null);       // { name, avatar, crest, season }
+  let draft = null;                    // profile being built during sign-in
+  let muted = lget("ig-muted", false);
+  let M = null, timers = [], boardTab = "today";
+
+  const SCREENS = ["landing", "signin", "face", "crest", "home", "game"];
+  function show(id) { SCREENS.forEach((s) => $(s).hidden = s !== id); $("result").hidden = true; window.scrollTo({ top: 0 }); paintMe(); }
+  function paintMe() {
+    $("me").hidden = !me;
+    if (me) { $("me-face").innerHTML = faceSVG(me.avatar, "face"); $("me-name").textContent = me.name; }
+  }
+
+  // =====================================================================
+  // Landing + leaderboard
+  // =====================================================================
+  const startOfDay = (d = new Date()) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const startOfWeek = () => { const d = new Date(); const day = (d.getDay() + 6) % 7; return startOfDay(d) - day * 86400000; };
+
+  function aggregate(results, since) {
+    const map = new Map();
+    results.filter((r) => r.ts >= since).forEach((r) => {
+      const k = nkey(r.name), cur = map.get(k) || { name: r.name, avatar: r.avatar, crest: r.crest, points: 0, matches: 0, correct: 0 };
+      cur.points += r.points; cur.matches++; cur.correct += r.correct; cur.avatar = r.avatar; cur.crest = r.crest; map.set(k, cur);
+    });
+    return [...map.values()].sort((a, b) => b.points - a.points || b.correct - a.correct);
+  }
+  function winnerHTML(label, w) {
+    if (!w) return `<div class="face" style="background:rgba(255,255,255,.5)"></div><div><div class="label">${label}</div><div class="none">No matches yet — be the first!</div></div>`;
+    return `${faceSVG(w.avatar, "face")}<div><div class="label">${label}</div><div class="who">🏆 ${esc(w.name)}</div><div class="pts">${w.points} points · ${w.matches} match${w.matches === 1 ? "" : "es"} · ${w.correct} sums right</div></div>`;
+  }
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  async function renderLanding() {
+    show("landing");
+    $("board").innerHTML = `<p class="hint center">Loading scores…</p>`;
+    const results = await store.results().catch(() => []);
+    const today = aggregate(results, startOfDay()), week = aggregate(results, startOfWeek());
+    $("winner-today").innerHTML = winnerHTML("Winner today", today[0]);
+    $("winner-week").innerHTML = winnerHTML("Winner this week", week[0]);
+    const list = boardTab === "today" ? today : week;
+    $("tab-today").setAttribute("aria-selected", boardTab === "today"); $("tab-week").setAttribute("aria-selected", boardTab === "week");
+    $("board").innerHTML = list.length ? list.slice(0, 15).map((p, i) =>
+      `<div class="brow${me && nkey(me.name) === nkey(p.name) ? " me" : ""}"><span class="rank">${i + 1}</span>${faceSVG(p.avatar, "face")}<span class="who">${crestSVG(club(p.crest))}<span>${esc(p.name)}</span></span><span class="pts">${p.points} pts</span></div>`
+    ).join("") : `<p class="hint center">Nobody has played ${boardTab === "today" ? "today" : "this week"} yet. Press Play!</p>`;
+  }
+
+  // =====================================================================
+  // Sign in → face → crest
+  // =====================================================================
+  async function renderSignin() {
+    draft = { name: "", avatar: 0, crest: "" };
+    $("name").value = ""; $("name-next").disabled = true;
+    show("signin");
+    const players = (await store.players().catch(() => [])).sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    $("roster-panel").hidden = players.length === 0;
+    $("roster").innerHTML = "";
+    players.forEach((p) => {
+      const b = document.createElement("button");
+      b.innerHTML = `${faceSVG(p.avatar, "face")}<span>${esc(p.name)}</span>`;
+      b.addEventListener("click", () => { me = { name: p.name, avatar: p.avatar, crest: p.crest, season: p.season || null, badges: p.badges || [], best: p.best || 0, total: p.total || 0 }; lset("ig-me", me); sfx("hello"); if (!me.season) newSeason(); renderHome(); });
+      $("roster").appendChild(b);
+    });
+    $("name").focus();
+  }
+  function renderFace() {
+    $("face-title").textContent = `Hi ${draft.name}! Pick your face`;
+    const host = $("faces"); host.innerHTML = "";
+    FACES.forEach((_, i) => {
+      const b = document.createElement("button");
+      b.setAttribute("aria-pressed", String(draft.avatar === i)); b.setAttribute("aria-label", `Face ${i + 1}`);
+      b.innerHTML = faceSVG(i, "");
+      b.addEventListener("click", () => { draft.avatar = i; sfx("flip"); renderFace(); });
+      host.appendChild(b);
+    });
+    show("face");
+  }
+  function renderCrest() {
+    const letter = draft.name.trim()[0]?.toUpperCase() || "";
+    if (!draft.crest) draft.crest = CLUB_LIST[0].name;
+    const c = club(draft.crest);
+    $("crest-preview").innerHTML = `${faceSVG(draft.avatar, "face")}${crestSVG(c, letter)}<div><div class="clubname">${esc(draft.name)}'s ${esc(c.name)}</div><div class="hint">Your club</div></div>`;
+    for (const league of ["pl", "la"]) {
+      const host = $(`crests-${league}`); host.innerHTML = "";
+      CLUB_LIST.filter((x) => x.league === league).forEach((x) => {
+        const b = document.createElement("button");
+        b.setAttribute("aria-pressed", String(draft.crest === x.name));
+        b.innerHTML = `${crestSVG(x, letter)}<span>${esc(x.name)}</span>`;
+        b.addEventListener("click", () => { draft.crest = x.name; sfx("flip"); renderCrest(); });
+        host.appendChild(b);
+      });
+    }
+    show("crest");
+  }
+  async function finishSignup() {
+    const existing = (await store.players().catch(() => [])).find((p) => nkey(p.name) === nkey(draft.name));
+    const keepSeason = me && nkey(me.name) === nkey(draft.name) ? me.season : existing?.season || null;
+    const prev = me && nkey(me.name) === nkey(draft.name) ? me : existing || {};
+    me = { name: draft.name.trim(), avatar: draft.avatar, crest: draft.crest, season: keepSeason, badges: prev.badges || [], best: prev.best || 0, total: prev.total || 0 };
+    if (!me.season) newSeason(); else { lset("ig-me", me); }
+    try { await store.savePlayer(me); } catch (e) { toast(e.message, "rival"); }
+    renderHome();
+  }
+
+  // =====================================================================
+  // Season
+  // =====================================================================
+  const AI_MIN = 3, LADDER_MIN = 8;
+  let roster = [];   // other players in the class (from the server)
+  const others = () => roster.filter((p) => nkey(p.name) !== nkey(me.name));
+  function entryInfo(e) {
+    if (e === "__me__") return { ...club(me.crest), kind: "me", name: `${me.name}'s ${club(me.crest).name}`, letter: me.name[0].toUpperCase(), avatar: me.avatar };
+    if (e.startsWith("p:")) {
+      const p = roster.find((x) => nkey(x.name) === e.slice(2)); if (!p) return null;
+      return { ...club(p.crest), kind: "player", name: `${p.name}'s ${club(p.crest).name}`, letter: p.name[0].toUpperCase(), avatar: p.avatar };
+    }
+    return { ...club(e), kind: "ai", name: e, letter: "", avatar: null };
+  }
+  function newSeason() {
+    const kids = others().map((p) => "p:" + nkey(p.name));
+    const ai = shuffle(CLUB_LIST.filter((c) => c.name !== me.crest).map((c) => c.name)).slice(0, Math.max(AI_MIN, LADDER_MIN - 1 - kids.length));
+    me.season = { v: 2, order: [...shuffle([...kids, ...ai]), "__me__"], wins: 0, played: 0, champion: false };
+    saveMe();
+  }
+  function syncSeason() {
+    const S = me.season;
+    if (!S || S.v !== 2) { newSeason(); return; }
+    S.order = S.order.filter((e) => entryInfo(e));
+    if (!S.champion) {
+      const known = new Set(S.order);
+      others().forEach((p) => { const k = "p:" + nkey(p.name); if (!known.has(k)) S.order.splice(rnd(0, S.order.indexOf("__me__")), 0, k); });
+    }
+    if (!S.order.includes("__me__")) S.order.push("__me__");
+  }
+  function saveMe() { me.badges = me.badges || []; me.best = me.best || 0; me.total = me.total || 0; lset("ig-me", me); store.savePlayer(me).catch(() => {}); }
+  let newBadges = [];
+  function award(id) {
+    me.badges = me.badges || [];
+    if (me.badges.includes(id)) return;
+    me.badges.push(id); newBadges.push(id);
+    const b = BADGES.find((x) => x.id === id); toast(`${b.icon} Badge: ${b.name}!`, "goal"); sfx(id === "champion" ? "champion" : "badge");
+  }
+  const myPos = () => me.season.order.indexOf("__me__") + 1;
+  const rivalEntry = () => me.season.order[myPos() - 2];
+  const myClub = () => ({ ...club(me.crest), name: `${me.name}'s ${club(me.crest).name}`, letter: me.name[0].toUpperCase() });
+
+  async function renderHome() {
+    roster = await store.players().catch(() => roster);
+    syncSeason();
+    const S = me.season, pos = myPos(), mine = myClub();
+    $("league-eyebrow").textContent = `Class League · ${S.order.length} clubs`;
+    $("home-title").textContent = `${mine.name} · ${ordinal(pos)} place`;
+    $("wins").textContent = `${S.wins} win${S.wins === 1 ? "" : "s"} · ${S.played} played`;
+    if (S.champion) {
+      $("next-match").innerHTML = `<div style="grid-column:1/-1"><div class="name">🏆 ${esc(mine.name)} are champions!</div><div class="pos">You beat every club in the league.</div></div>`;
+      $("tier").textContent = "🏆 Season complete"; $("rules").textContent = "Restart the season to do it all again — every match still earns leaderboard points."; $("play").hidden = true;
+    } else {
+      const rv = entryInfo(rivalEntry()), interval = rivalSpeed(pos, S.order.length), lvl = levelFor(me.total);
+      $("next-match").innerHTML = `<div>${crestSVG(mine, mine.letter)}<div class="name">${esc(mine.name)}</div><div class="pos">${ordinal(pos)}</div></div><div class="vs">VS</div><div>${crestSVG(rv, rv.letter)}<div class="name">${esc(rv.name)}</div><div class="pos">${ordinal(pos - 1)}</div></div>`;
+      $("tier").textContent = `🎯 Level ${lvl}: ${LEVELS[lvl - 1].name}`;
+      $("rules").textContent = `60 seconds. Every right answer is a GOAL. Sums start at your level and get harder every ${RAMP_EVERY} answers. ${rv.name} score every ${interval} seconds — and whenever you get one wrong. Last 10 seconds are GOLDEN GOAL time. Win to swap places!`;
+      $("play").hidden = false;
+    }
+    const nextLvl = levelFor(me.total) < LEVELS.length ? `<span>Next level in <b>${POINTS_PER_LEVEL - ((me.total || 0) % POINTS_PER_LEVEL)} pts</b></span>` : `<span><b>Max level!</b></span>`;
+    $("best").innerHTML = `<span>Best match <b>${me.best || 0} pts</b></span><span>Total <b>${me.total || 0} pts</b></span>${nextLvl}<span>Badges <b>${(me.badges || []).length}/${BADGES.length}</b></span>`;
+    $("cabinet").innerHTML = BADGES.map((b) => `<div class="badge-card${(me.badges || []).includes(b.id) ? "" : " locked"}"><span class="ic">${b.icon}</span><span>${b.name}</span><span class="how">${b.how}</span></div>`).join("");
+    $("cabinet-count").textContent = `${(me.badges || []).length} of ${BADGES.length}`;
+    const host = $("table"); host.innerHTML = "";
+    S.order.forEach((e, i) => {
+      const isMe = e === "__me__", c = entryInfo(e), p = i + 1;
+      const row = document.createElement("div");
+      row.className = "trow" + (isMe ? " you" : "") + (!S.champion && e === rivalEntry() ? " next" : "") + (p <= 3 ? " top" : "");
+      row.style.setProperty("--d", `${-(i * 0.73) % 4.2}s`);
+      const zone = p === 1 ? "🏆 Champion" : p <= 3 ? "Top 3" : (!S.champion && e === rivalEntry()) ? "Next" : "";
+      row.innerHTML = `<span class="n">${p}</span>${crestSVG(c, c.letter)}<span>${esc(c.name)}${isMe ? " (you)" : ""}</span><span class="zone">${zone}</span><span class="slot">${c.avatar === null ? `<span class="ai" title="Computer team">AI</span>` : faceSVG(c.avatar, "face")}</span>`;
+      row.addEventListener("click", () => { cheer(); row.classList.remove("jump"); void row.offsetWidth; row.classList.add("jump"); });
+      host.appendChild(row);
+    });
+    show("home");
+    requestAnimationFrame(() => { const r = host.querySelector(".you"); if (r) host.scrollTop = r.offsetTop - host.clientHeight / 2 + r.offsetHeight / 2; });
+  }
+
+  // =====================================================================
+  // Match
+  // =====================================================================
+  function startMatch() {
+    const pos = myPos(), interval = rivalSpeed(pos, me.season.order.length), baseLevel = levelFor(me.total);
+    M = { you: myClub(), rival: entryInfo(rivalEntry()), interval, baseLevel, level: baseLevel, maxLevel: baseLevel, youGoals: 0, rivalGoals: 0, correct: 0, wrong: 0, streak: 0, best: 0, hatTricks: 0, golden: false, goldenGoal: false,
+          left: MATCH_SECONDS, attack: 0, input: "", q: null, live: false, done: false, locked: false };
+    $("you-who").innerHTML = `${crestSVG(M.you, M.you.letter)}<span>${esc(me.name)}</span>`;
+    $("rival-who").innerHTML = `${crestSVG(M.rival, M.rival.letter)}<span>${esc(M.rival.name)}</span>${M.rival.avatar !== null ? faceSVG(M.rival.avatar, "face") : ""}`;
+    $("attack-label").textContent = `${M.rival.name} attacking…`; $("attack-hint").textContent = `goal every ${interval}s`;
+    $("attack-fill").style.width = "0%"; $("feedback").textContent = ""; $("streak").textContent = "";
+    renderPad(); paintScore(); nextQuestion();
+    show("game");
+    countdown(["3", "2", "1", "GO!"], () => { M.live = true; sfx("whistle"); tick(); });
+  }
+  function countdown(steps, done) {
+    const el = $("countdown"); el.hidden = false; let i = 0;
+    const step = () => { if (!M) { el.hidden = true; return; } if (i >= steps.length) { el.hidden = true; done(); return; } el.textContent = steps[i++]; sfx("flip"); timers.push(setTimeout(step, 700)); };
+    step();
+  }
+  function tick() {
+    const id = setInterval(() => {
+      if (!M || M.done) { clearInterval(id); return; }
+      M.left--; M.attack++;
+      if (M.attack >= M.interval) { M.attack = 0; rivalGoal(`${M.rival.name} score! Answer faster!`); }
+      if (M.left === 10) { M.golden = true; toast("⚡ GOLDEN GOAL TIME — goals count double!", "goal"); sfx("golden"); }
+      paintScore();
+      if (M.left <= 10 && M.left > 0) sfx("tick");
+      if (M.left <= 0) { clearInterval(id); finish(); }
+    }, 1000);
+    timers.push(id);
+  }
+  function paintScore() {
+    $("you-goals").textContent = M.youGoals; $("rival-goals").textContent = M.rivalGoals;
+    $("clock").textContent = M.left; $("clock").classList.toggle("hurry", M.left <= 10 && !M.golden); $("clock").classList.toggle("golden", M.golden);
+    $("live-pts").textContent = livePoints(M); $("live-lvl").textContent = M.level;
+    $("attack-fill").style.width = `${(M.attack / M.interval) * 100}%`;
+  }
+  function bump(id) { const el = $(id); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+  function nextQuestion() {
+    const answered = M.correct + M.wrong, lvl = Math.min(LEVELS.length, M.baseLevel + Math.floor(answered / RAMP_EVERY));
+    if (lvl > M.level) { M.level = lvl; M.maxLevel = Math.max(M.maxLevel, lvl); toast(`⬆ Level ${lvl}: ${LEVELS[lvl - 1].name}`, "goal"); sfx("levelUp"); }
+    M.q = genFor(M.level); M.input = "";
+    const Q = $("question");
+    if (M.q.col) {
+      const { a, op, b } = M.q.col;
+      Q.innerHTML = `<span class="col"><span></span><span>${a}</span><span class="op">${op}</span><span>${b}</span><span class="line"></span><span></span><span class="ans" id="q-ans"></span></span>`;
+    } else Q.innerHTML = M.q.missing ? esc(M.q.q).replace("?", '<span class="ans" id="q-ans"></span>') : `${esc(M.q.q)} = <span class="ans" id="q-ans"></span>`;
+    Q.className = "question" + (M.q.col ? " column" : "");
+  }
+  function renderPad() {
+    const host = $("pad"); host.innerHTML = "";
+    ["1","2","3","4","5","6","7","8","9","⌫","0","⚽ Shoot"].forEach((k) => {
+      const b = document.createElement("button");
+      b.className = "key" + (k === "⌫" ? " del" : k.startsWith("⚽") ? " go" : ""); b.textContent = k;
+      b.setAttribute("aria-label", k === "⌫" ? "Delete" : k.startsWith("⚽") ? "Shoot (submit answer)" : k);
+      b.addEventListener("click", () => press(k === "⌫" ? "Backspace" : k.startsWith("⚽") ? "Enter" : k));
+      host.appendChild(b);
+    });
+  }
+  function press(key) {
+    if (!M || !M.live || M.done || M.locked) return;
+    if (/^[0-9]$/.test(key)) { if (M.input.length < 3) { M.input += key; sfx("flip"); } }
+    else if (key === "Backspace") M.input = M.input.slice(0, -1);
+    else if (key === "Enter") { if (M.input !== "") submit(); return; }
+    $("q-ans").textContent = M.input;
+  }
+  function submit() {
+    const q = $("question"), guess = Number(M.input); M.locked = true;
+    if (guess === M.q.a) {
+      M.correct++; M.streak++; M.best = Math.max(M.best, M.streak); M.youGoals += M.golden ? 2 : 1; bump("you-goals");
+      if (M.golden) M.goldenGoal = true;
+      q.classList.add("good"); sfx("goal"); confetti(M.you);
+      let msg = M.golden ? "GOLDEN GOAL! Counts double! ⚡⚽" : pick(["GOAL! ⚽", "What a strike! ⚽", "Top corner! ⚽", "GOOOAL! ⚽"]);
+      if (M.golden) sfx("goldenGoal");
+      if (M.streak % 3 === 0) { M.hatTricks++; msg = "HAT-TRICK! +3 bonus points! 🎩"; sfx("hatTrick"); }
+      if (M.streak === 6) sfx("onFire");
+      $("feedback").textContent = msg; $("streak").textContent = M.streak >= 2 ? `🔥 ${M.streak} in a row` : "";
+      paintScore();
+      timers.push(setTimeout(() => { M.locked = false; if (!M.done) nextQuestion(); }, 500));
+    } else {
+      M.wrong++; M.streak = 0; q.classList.add("bad");
+      $("q-ans").textContent = M.q.a; $("feedback").textContent = `Saved! The answer was ${M.q.a}.`; $("streak").textContent = "";
+      rivalGoal(`${M.rival.name} score on the break!`);
+      timers.push(setTimeout(() => { M.locked = false; if (!M.done) { $("feedback").textContent = ""; nextQuestion(); } }, 1300));
+    }
+  }
+  function rivalGoal(msg) { M.rivalGoals++; bump("rival-goals"); toast(msg, "rival"); sfx("miss"); paintScore(); }
+
+  const livePoints = (m) => m.correct + m.hatTricks * 3;
+  function scorePoints(m, outcome) {
+    const rows = [
+      ["Sums right", `${m.correct} × 1`, m.correct],
+      ["Hat-trick bonus", `${m.hatTricks} × 3`, m.hatTricks * 3],
+      ["Win bonus", outcome === "win" ? "You won!" : outcome === "draw" ? "Draw" : "Lost", outcome === "win" ? 5 : outcome === "draw" ? 2 : 0],
+    ];
+    return { rows, total: rows.reduce((t, r) => t + r[2], 0) };
+  }
+
+  async function finish() {
+    M.done = true; M.live = false; clearTimers();
+    const S = me.season, pos = myPos();
+    const outcome = M.youGoals > M.rivalGoals ? "win" : M.youGoals === M.rivalGoals ? "draw" : "loss";
+    S.played++;
+    let move = "", cls = "", becameChampion = false;
+    if (outcome === "win") {
+      S.wins++;
+      const i = pos - 1; [S.order[i - 1], S.order[i]] = [S.order[i], S.order[i - 1]];
+      if (pos - 1 === 1) { S.champion = true; becameChampion = true; move = `🏆 ${M.you.name} are CHAMPIONS!`; } else move = `⬆ Up to ${ordinal(pos - 1)} place!`;
+      cls = "up";
+    } else move = `↔ Still ${ordinal(pos)}. ${outcome === "draw" ? "One more goal next time!" : "Have another go!"}`;
+    saveMe();
+
+    const pts = scorePoints(M, outcome);
+    newBadges = [];
+    me.total = (me.total || 0) + pts.total; me.best = Math.max(me.best || 0, pts.total);
+    if (M.correct > 0) award("first_goal");
+    if (M.hatTricks > 0) award("hat_trick");
+    if (M.best >= 6) award("on_fire");
+    if (M.correct >= 5 && M.wrong === 0) award("perfect");
+    if (outcome === "win") award("first_win");
+    if (myPos() <= Math.ceil(S.order.length / 2)) award("top_half");
+    if (pts.total >= 15) award("big_score");
+    if (M.goldenGoal) award("golden");
+    if (becameChampion) award("champion");
+    if (me.total >= 100) award("club_100");
+    saveMe();
+    const saved = store.addResult({ name: me.name, avatar: me.avatar, crest: me.crest, points: pts.total, correct: M.correct, wrong: M.wrong, outcome }).catch(() => toast("Couldn't save score", "rival"));
+
+    $("result-title").textContent = outcome === "win" ? (becameChampion ? "🏆 CHAMPIONS!" : "🎉 You win!") : outcome === "draw" ? "🤝 A draw!" : "Full time";
+    $("result-score").textContent = `${M.youGoals} – ${M.rivalGoals}`;
+    $("result-move").textContent = move; $("result-move").className = "move " + cls;
+    $("result-points").innerHTML = pts.rows.map(([l, d, v]) => `<div><span>${l} <span class="hint">· ${d}</span></span><span>+${v}</span></div>`).join("")
+      + `<div class="total"><span>Points</span><span>+${pts.total}${pts.total >= (me.best || 0) && pts.total > 0 ? " 🏅 best!" : ""}</span></div>`
+      + `<div><span>Reached level ${M.maxLevel} in this match</span><span>${levelFor(me.total) > M.baseLevel ? `⬆ Now level ${levelFor(me.total)}!` : `${POINTS_PER_LEVEL - (me.total % POINTS_PER_LEVEL)} pts to level ${M.baseLevel + 1}`}</span></div>`
+      + (newBadges.length ? `<div class="hint" style="justify-content:center;gap:8px;margin-top:6px">${newBadges.map((id) => { const b = BADGES.find((x) => x.id === id); return `${b.icon} New badge: ${b.name}`; }).join(" · ")}</div>` : "");
+    $("result-rank").textContent = "";
+    saved.then(() => store.results()).then((rs) => {
+      const today = aggregate(rs, startOfDay()), i = today.findIndex((p) => nkey(p.name) === nkey(me.name));
+      if (i < 0) return;
+      $("result-rank").textContent = i === 0 ? (today.length > 1 ? `🥇 You're top of the class today, ${today[i].points - today[1].points} ahead of ${today[1].name}!` : `🥇 You're top of the class today!`)
+        : `You're ${ordinal(i + 1)} today — ${today[i - 1].points - today[i].points + 1} more point${today[i - 1].points - today[i].points + 1 === 1 ? "" : "s"} to pass ${today[i - 1].name}!`;
+    }).catch(() => {});
+    $("result-msg").textContent = outcome === "win"
+      ? (S.champion ? "You've beaten everyone. Legend!" : `Next up: ${entryInfo(rivalEntry()).name}.${rivalSpeed(myPos(), S.order.length) !== M.interval ? " They score faster now!" : ""}`)
+      : `You need more goals than ${M.rival.name}. Answer quickly, and try not to get any wrong.`;
+    $("result-next").textContent = S.champion ? "See the table 🏆" : outcome === "win" ? "Next match ▶" : "Play again ▶";
+    sfx(becameChampion ? "champion" : outcome === "win" ? "win" : "whistle");
+    if (outcome === "win") { confetti(M.you); timers.push(setTimeout(() => confetti(M.you), 400)); }
+    timers.push(setTimeout(() => { $("result").hidden = false; }, 600));
+  }
+  function clearTimers() { timers.forEach((t) => { clearTimeout(t); clearInterval(t); }); timers = []; }
+  function quitMatch() { if (M) { M.done = true; M.live = false; } clearTimers(); M = null; $("countdown").hidden = true; renderHome(); }
+
+  let toastTimer = null;
+  function toast(msg, kind = "") { const t = $("toast"); t.textContent = msg; t.className = "toast show " + kind; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 1500); }
+
+  // ---------- Sound ----------
+  // Drop real recordings into public/sounds/<name>.mp3 (see SOUND_FILES) and they are used automatically;
+  // anything missing falls back to the synthesised stadium sounds below.
+  let ctx = null, master = null;
+  const ac = () => {
+    if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = .9; master.connect(ctx.destination); }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  };
+  const SOUND_FILES = ["goal", "miss", "whistle", "hatTrick", "onFire", "badge", "champion", "golden", "goldenGoal", "win", "hello", "tick", "flip",
+                       "cheer1", "cheer2", "cheer3", "cheer4", "cheer5", "cheer6", "levelUp"];
+  const buffers = {};
+  async function loadSounds() {
+    // sounds/manifest.json lists which files exist, e.g. ["goal","win"] — one fetch instead of 20 misses
+    let available = [];
+    try { const r = await fetch("sounds/manifest.json", { cache: "no-cache" }); if (r.ok) available = await r.json(); } catch {}
+    await Promise.all(SOUND_FILES.filter((n) => available.includes(n)).map(async (n) => {
+      try {
+        const res = await fetch(`sounds/${n}.mp3`, { cache: "force-cache" }); if (!res.ok) return;
+        buffers[n] = await ac().decodeAudioData(await res.arrayBuffer());
+      } catch {}
+    }));
+  }
+  function playBuffer(name, g = 1) {
+    const c = ac(), src = c.createBufferSource(), gn = c.createGain();
+    src.buffer = buffers[name]; gn.gain.value = g; src.connect(gn).connect(master); src.start();
+  }
+
+  // --- synth building blocks
+  function tone({ f, to, d, type = "triangle", g = .18, at = 0, detune = 0, lp, vib }) {
+    const c = ac(), t = c.currentTime + at, o = c.createOscillator(), gn = c.createGain();
+    o.type = type; o.detune.value = detune; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
+    gn.gain.setValueAtTime(.001, t); gn.gain.exponentialRampToValueAtTime(g, t + .015); gn.gain.setValueAtTime(g, t + d * .6); gn.gain.exponentialRampToValueAtTime(.001, t + d);
+    let out = o;
+    if (lp) { const flt = c.createBiquadFilter(); flt.type = "lowpass"; flt.frequency.value = lp; o.connect(flt); out = flt; }
+    if (vib) { const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = vib[0]; lg.gain.value = vib[1]; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t + d + .05); }
+    out.connect(gn).connect(master); o.start(t); o.stop(t + d + .05);
+  }
+  function noise({ d, g = .15, at = 0, f = 1200, q = 1, type = "bandpass", attack = .3, sweep }) {
+    const c = ac(), t = c.currentTime + at, buf = c.createBuffer(1, Math.ceil(c.sampleRate * d), c.sampleRate), data = buf.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0;   // pink-ish noise sounds more like a crowd than white
+    for (let i = 0; i < data.length; i++) { const w = Math.random() * 2 - 1; b0 = .997 * b0 + .029 * w; b1 = .985 * b1 + .032 * w; b2 = .95 * b2 + .05 * w; data[i] = (b0 + b1 + b2 + w * .1) * 2; }
+    const src = c.createBufferSource(), gn = c.createGain(), flt = c.createBiquadFilter();
+    src.buffer = buf; flt.type = type; flt.frequency.setValueAtTime(f, t); flt.Q.value = q; if (sweep) flt.frequency.exponentialRampToValueAtTime(sweep, t + d);
+    gn.gain.setValueAtTime(.001, t); gn.gain.exponentialRampToValueAtTime(g, t + d * attack); gn.gain.exponentialRampToValueAtTime(.001, t + d);
+    src.connect(flt).connect(gn).connect(master); src.start(t);
+  }
+  const crowd = (d, g, at = 0) => { noise({ d, g, at, f: 900, q: .6, attack: .25 }); noise({ d, g: g * .6, at, f: 2400, q: .8, attack: .35 }); noise({ d: d * .9, g: g * .5, at, f: 350, q: .7, type: "lowpass", attack: .2 }); };
+  const refWhistle = (d, at = 0, g = .16) => { tone({ f: 2350, d, type: "square", g, at, lp: 3200, vib: [45, 90] }); noise({ d, g: g * .5, at, f: 2500, q: 3, attack: .05 }); };
+  const airHorn = (d, at = 0) => [0, 7, -7, 12].forEach((dt, i) => tone({ f: 165 * (i === 3 ? 2 : 1), d, type: "sawtooth", g: .08, at, detune: dt, lp: 1400 }));
+  const drum = (at = 0, f = 150) => { tone({ f, to: f * .35, d: .22, type: "sine", g: .35, at }); noise({ d: .08, g: .12, at, f: 3000, attack: .05 }); };
+  const fanfare = (notes, at = 0, step = .14, last = .5) => notes.forEach((f, i) => [0, 4, -4].forEach((dt) => tone({ f, d: i === notes.length - 1 ? last : step, type: "sawtooth", g: .06, at: at + i * step, detune: dt, lp: 2200 })));
+
+  const SYNTH = {
+    flip: () => tone({ f: 640, d: .04, g: .08 }),
+    tick: () => { tone({ f: 1100, d: .03, g: .05 }); },
+    hello: () => { fanfare([523, 659, 784], 0, .12, .4); drum(0); },
+    goal: () => { refWhistle(.18); crowd(1.6, .3, .05); drum(.1, 120); },
+    miss: () => { crowd(.6, .12); tone({ f: 180, to: 90, d: .35, type: "sine", g: .25 }); noise({ d: .3, g: .12, f: 600, q: .8, attack: .1 }); },
+    whistle: () => { refWhistle(.14); refWhistle(.14, .2); refWhistle(.45, .4); },
+    hatTrick: () => { drum(0); drum(.15); drum(.3, 200); airHorn(.9, .35); crowd(2, .32, .3); fanfare([784, 988, 1175, 1568], .5, .1, .7); },
+    onFire: () => { for (let i = 0; i < 8; i++) drum(i * .07, 120 + i * 30); noise({ d: 1.2, g: .25, at: .3, f: 400, sweep: 6000, q: 1, attack: .5 }); crowd(1.8, .3, .4); },
+    badge: () => { fanfare([523, 659, 784, 1047], 0, .13, .6); drum(.5, 100); },
+    champion: () => { fanfare([392, 523, 659, 784], 0, .18, .2); fanfare([784, 988, 1175, 1568], .8, .18, 1.4); [0, .2, .4, .6].forEach((at) => drum(at + .8, 110)); crowd(3.2, .4, .6); airHorn(1.2, 1.4); },
+    golden: () => { for (let i = 0; i < 12; i++) tone({ f: 1800 + i * 160, d: .12, type: "sine", g: .07, at: i * .05 }); refWhistle(.5, .2, .12); crowd(1.2, .15, .3); },
+    goldenGoal: () => { tone({ f: 300, to: 2400, d: .35, type: "sine", g: .12 }); refWhistle(.2, .05); crowd(2, .38, .1); drum(.15, 110); fanfare([1047, 1319, 1568, 2093], .35, .09, .6); },
+    win: () => { refWhistle(.14); refWhistle(.14, .2); refWhistle(.6, .4); crowd(3, .4, .2); airHorn(1, .6); [0, .25, .5, .75].forEach((at) => drum(at + .8, 100)); },
+    levelUp: () => { [523, 659, 784, 1047].forEach((f, i) => tone({ f, d: .09, type: "square", g: .09, at: i * .07 })); tone({ f: 1047, to: 2093, d: .25, type: "sine", g: .1, at: .3 }); },
+    cheer1: () => { crowd(1.2, .35); },                                           // crowd roar
+    cheer2: () => { airHorn(.7); },                                               // air horn
+    cheer3: () => { refWhistle(.12); refWhistle(.12, .16); refWhistle(.3, .32); }, // ref whistle
+    cheer4: () => { drum(0, 130); drum(.18, 130); drum(.36, 130); drum(.54, 90); drum(.72, 90); crowd(.9, .2, .5); }, // clap-clap-clap-clap-clap
+    cheer5: () => { fanfare([659, 784, 1047], 0, .1, .35); },                   // trumpet
+    cheer6: () => { tone({ f: 240, to: 120, d: .5, type: "sine", g: .3, lp: 800 }); tone({ f: 240, to: 120, d: .5, type: "sine", g: .2, at: .05, detune: 15 }); }, // vuvuzela drone
+  };
+  const CHEERS = ["cheer1", "cheer2", "cheer3", "cheer4", "cheer5", "cheer6"];
+  function sfx(kind, g = 1) {
+    if (muted) return;
+    try { if (buffers[kind]) playBuffer(kind, g); else (SYNTH[kind] || SYNTH.flip)(); } catch {}
+  }
+  function cheer() { sfx(pick(CHEERS)); }
+
+  // ---------- Confetti ----------
+  const cv = $("confetti"), cx = cv.getContext("2d");
+  let bits = [], raf = null;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function resize() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+  addEventListener("resize", resize); resize();
+  function confetti(c) {
+    if (reduced) return;
+    const colors = [c.c1, c.c2, "#f2b705", "#ffffff"];
+    for (let i = 0; i < 60; i++) bits.push({ x: cv.width / 2, y: cv.height * .3, vx: (Math.random() - .5) * 18 * devicePixelRatio, vy: (Math.random() * -14 - 4) * devicePixelRatio, s: (5 + Math.random() * 6) * devicePixelRatio, c: colors[i % colors.length], r: Math.random() * Math.PI, life: 90 });
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+  function frame() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    bits = bits.filter((b) => b.life > 0 && b.y < cv.height + 20);
+    bits.forEach((b) => { b.x += b.vx; b.vy += .5 * devicePixelRatio; b.y += b.vy; b.r += .1; b.life--; cx.save(); cx.translate(b.x, b.y); cx.rotate(b.r); cx.fillStyle = b.c; cx.globalAlpha = Math.min(1, b.life / 30); cx.fillRect(-b.s / 2, -b.s / 2, b.s, b.s * .6); cx.restore(); });
+    raf = bits.length ? requestAnimationFrame(frame) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+  }
+
+  // =====================================================================
+  // Wiring
+  // =====================================================================
+  $("brand").addEventListener("click", () => { if (M) quitMatch(); renderLanding(); });
+  $("me").addEventListener("click", () => { if (M) return; renderHome(); });
+  $("play-landing").addEventListener("click", () => me ? renderHome() : renderSignin());
+  $("tab-today").addEventListener("click", () => { boardTab = "today"; renderLanding(); });
+  $("tab-week").addEventListener("click", () => { boardTab = "week"; renderLanding(); });
+
+  $("name").addEventListener("input", () => { $("name-next").disabled = $("name").value.trim().length < 2; });
+  $("name").addEventListener("keydown", (e) => { if (e.key === "Enter" && !$("name-next").disabled) $("name-next").click(); });
+  $("name-next").addEventListener("click", () => {
+    draft.name = $("name").value.replace(/[^\p{L}\p{N} '\-]/gu, "").trim().slice(0, 20);
+    if (draft.name.length < 2) return;
+    draft.name = draft.name[0].toUpperCase() + draft.name.slice(1);
+    sfx("hello");
+    renderFace();
+  });
+  $("face-back").addEventListener("click", renderSignin);
+  $("face-next").addEventListener("click", renderCrest);
+  $("crest-back").addEventListener("click", renderFace);
+  $("crest-next").addEventListener("click", finishSignup);
+
+  $("play").addEventListener("click", startMatch);
+  $("to-leaderboard").addEventListener("click", renderLanding);
+  $("switch").addEventListener("click", () => { me = null; lset("ig-me", null); renderSignin(); });
+  $("edit-look").addEventListener("click", () => { draft = { name: me.name, avatar: me.avatar, crest: me.crest }; renderFace(); });
+  $("reset").addEventListener("click", () => { if (confirm("Restart the season from the bottom of the table?")) { newSeason(); renderHome(); } });
+  $("quit").addEventListener("click", quitMatch);
+  $("result-next").addEventListener("click", () => { $("result").hidden = true; M = null; me.season.champion ? renderHome() : startMatch(); });
+  $("result-table").addEventListener("click", () => { $("result").hidden = true; M = null; renderHome(); });
+  $("mute").addEventListener("click", () => { muted = !muted; lset("ig-muted", muted); $("mute").setAttribute("aria-pressed", String(muted)); $("mute").textContent = muted ? "🔇 Muted" : "🔊 Sound"; });
+  document.addEventListener("keydown", (e) => {
+    if (!M || !M.live) return;
+    if (/^[0-9]$/.test(e.key) || e.key === "Backspace" || e.key === "Enter") { e.preventDefault(); press(e.key); }
+  });
+
+  // ---------- Boot ----------
+  (async () => {
+    if (muted) { $("mute").setAttribute("aria-pressed", "true"); $("mute").textContent = "🔇 Muted"; }
+    mountLogos();
+    await detectStore();
+    renderLanding();
+    document.addEventListener("pointerdown", () => loadSounds(), { once: true });
+  })();
+})();
+</script>
+</body>
+</html>
