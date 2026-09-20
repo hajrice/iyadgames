@@ -61,6 +61,10 @@ const server = http.createServer(async (req, res) => {
       writeJSON(RESULTS, results.slice(-5000));
       return send(res, 200, r);
     }
+    if (url.pathname === "/api/health") {
+      let writable = true; try { fs.accessSync(DATA, fs.constants.W_OK); } catch { writable = false; }
+      return send(res, 200, { ok: true, dataDir: DATA, writable, players: Object.keys(readJSON(PLAYERS, {})).length, results: readJSON(RESULTS, []).length, files: fs.readdirSync(DATA) });
+    }
     if (url.pathname.startsWith("/api/")) return send(res, 404, { error: "not found" });
 
     // ---- Static ----

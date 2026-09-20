@@ -640,7 +640,7 @@
     async addResult(r) { const all = lget("ig-results", []); all.push({ ...r, ts: Date.now() }); lset("ig-results", all.slice(-2000)); },
   };
   const api = async (path, body) => {
-    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 4000);
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 15000);
     try {
       const res = await fetch(path, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json" } : {}, body: body && JSON.stringify(body), signal: ctrl.signal });
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || res.statusText); }
@@ -655,8 +655,15 @@
   };
   let store = local;
   async function detectStore() {
-    try { await remote.players(); store = remote; $("offline").hidden = true; }
-    catch { store = local; $("offline").hidden = false; }
+    // Opening index.html straight from disk (file://) has no server — everything else should have one.
+    if (location.protocol === "file:") { store = local; $("offline").hidden = false; return; }
+    // The server may be waking up; try a few times before giving up on it.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try { await remote.players(); store = remote; $("offline").hidden = true; return; }
+      catch { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    store = local; $("offline").hidden = false;
+    toast("Can't reach the server — scores stay on this device", "rival");
   }
 
   // =====================================================================

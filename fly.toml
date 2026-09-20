@@ -11,9 +11,9 @@ primary_region = "fra"   # Frankfurt — closest region to Bosnia
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = "stop"    # sleeps when nobody is playing (saves money)
+  auto_stop_machines = "off"     # keep it awake so the first kid of the day doesn't wait for a cold start
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
 [[mounts]]
   source = "data"                # persistent volume — scores and players live here
